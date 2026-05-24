@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
   head: () => ({
     meta: [
-      { title: "StayEase — Curated stays around the world" },
+      { title: "Purnimashree - Hotels" },
       { name: "description", content: "Discover handpicked boutique, luxury, beach and mountain hotels. Book in seconds with StayEase." },
     ],
   }),
