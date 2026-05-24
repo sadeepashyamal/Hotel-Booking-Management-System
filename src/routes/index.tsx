@@ -1,11 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Award, Sparkles, Globe2 } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
+import hotel1 from "@/assets/hotel-1.jpg";
+import hotel2 from "@/assets/hotel-2.jpg";
+import hotel3 from "@/assets/hotel-3.jpg";
+import hotel4 from "@/assets/hotel-4.jpg";
 import Layout from "@/components/Layout";
-import SearchBar from "@/components/SearchBar";
 import HotelCard from "@/components/HotelCard";
 import { hotels, destinations, testimonials } from "@/data/hotels";
+
+const HERO_IMAGES = [heroImg, hotel1, hotel2, hotel3, hotel4];
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -20,13 +26,32 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const featured = hotels.slice(0, 6);
   const inspiration = hotels.slice(6, 10);
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImgIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <Layout transparentNav>
       {/* HERO */}
       <section className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
-        <img src={heroImg} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/70" />
+        <AnimatePresence>
+          <motion.img
+            key={currentImgIndex}
+            src={HERO_IMAGES[currentImgIndex]}
+            alt=""
+            initial={{ opacity: 0, scale: 1.08 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/70 pointer-events-none" />
 
         <div className="relative z-10 h-full mx-auto max-w-7xl px-5 lg:px-8 flex flex-col justify-end pb-12 lg:pb-20 pt-28">
           <motion.div
@@ -43,13 +68,20 @@ function HomePage() {
               A quietly curated marketplace of boutique, luxury and beach hotels around the world — chosen for the way they make you feel.
             </p>
           </motion.div>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-8 lg:mt-12"
-          >
-            <SearchBar />
-          </motion.div>
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-12 right-5 lg:right-8 z-20 flex gap-2">
+          {HERO_IMAGES.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentImgIndex(idx)}
+              className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
+                currentImgIndex === idx ? "w-6 bg-gold" : "w-1.5 bg-white/45 hover:bg-white"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
         </div>
       </section>
 
